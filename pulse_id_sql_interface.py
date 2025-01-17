@@ -40,8 +40,6 @@ if 'extraction_results' not in st.session_state:
     st.session_state.extraction_results = None
 if 'email_results' not in st.session_state:
     st.session_state.email_results = None
-if 'groq_api_key' not in st.session_state:
-    st.session_state.groq_api_key = ""  # Groq API key
 if 'openai_api_key' not in st.session_state:
     st.session_state.openai_api_key = ""  # OpenAI API key
 if 'interaction_history' not in st.session_state:
@@ -54,6 +52,9 @@ if 'selected_template' not in st.session_state:
     st.session_state.selected_template = "email_task_description1.txt"  # Default template
 if 'trigger_rerun' not in st.session_state:
     st.session_state.trigger_rerun = False  # Track if a re-run is needed
+
+# Hardcoded Groq API Key
+GROQ_API_KEY = "your_groq_api_key_here"  # Replace with your actual Groq API key
 
 # Function to read the email task description from a text file
 def read_email_task_description(file_path):
@@ -120,19 +121,11 @@ st.markdown(
 # Sidebar Configuration
 st.sidebar.header("Settings")
 
-def get_groq_api_key():
-    """Function to get Groq API Key from user input"""
-    return st.sidebar.text_input("Enter Your Groq API Key:", type="password", key="groq_api_key")
-
 def get_openai_api_key():
     """Function to get OpenAI API Key from user input"""
     return st.sidebar.text_input("Enter Your OpenAI API Key:", type="password", key="openai_api_key")
 
-# Get API Keys
-groq_api_key = get_groq_api_key()
-if groq_api_key:
-    st.session_state.groq_api_key = groq_api_key
-
+# Get OpenAI API Key
 openai_api_key = get_openai_api_key()
 if openai_api_key:
     st.session_state.openai_api_key = openai_api_key
@@ -156,13 +149,13 @@ st.session_state.selected_template = st.sidebar.selectbox("Select Email Template
 st.sidebar.success(f"✅ Selected Template: {st.session_state.selected_template}")
 
 # Initialize SQL Database and Agent
-if st.session_state.selected_db and st.session_state.groq_api_key and not st.session_state.db_initialized:
+if st.session_state.selected_db and not st.session_state.db_initialized:
     try:
-        # Initialize Groq LLM
+        # Initialize Groq LLM with hardcoded API key
         llm = ChatGroq(
             temperature=0,
             model_name=model_name,
-            api_key=st.session_state.groq_api_key
+            api_key=GROQ_API_KEY  # Use hardcoded Groq API key
         )
 
         # Initialize SQLDatabase
@@ -221,7 +214,7 @@ def render_query_section():
                     st.session_state.raw_output = result['output'] if isinstance(result, dict) else result
                     
                     # Process raw output using an extraction agent 
-                    extractor_llm = LLM(model="groq/llama-3.1-70b-versatile", api_key=st.session_state.groq_api_key)
+                    extractor_llm = LLM(model="groq/llama-3.1-70b-versatile", api_key=GROQ_API_KEY)  # Use hardcoded Groq API key
                     extractor_agent = Agent(
                         role="Data Extractor",
                         goal="Extract merchants, emails, google reviews from the raw output if they are only available.",
