@@ -162,7 +162,8 @@ if st.session_state.selected_db and api_key and not st.session_state.db_initiali
             llm=llm,
             db=st.session_state.db,
             agent_type=AgentType.ZERO_SHOT_REACT_DESCRIPTION,
-            verbose=True
+            verbose=True,
+            handle_parsing_errors=True
         )
         st.session_state.db_initialized = True  # Mark database as initialized
         st.sidebar.success("✅ Database and LLM Connected Successfully!")
