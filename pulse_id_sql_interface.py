@@ -163,7 +163,7 @@ if st.session_state.selected_db and not st.session_state.db_initialized:
         llm = ChatGroq(
             temperature=0,
             model_name=model_name,
-            api_key=GROQ_API_KEY  # Use hardcoded Groq API key
+            api_key='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'  # Use hardcoded Groq API key
         )
 
         # Initialize SQLDatabase
