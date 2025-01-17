@@ -1,8 +1,8 @@
-Generate professional marketing emails for the following merchants and their emails to pitch them:
+Generate professional marketing emails for the following merchants and their emails to pitch them.u can use simple emojis.:
 
 {merchant_data}
 
-Use the below format:
+Use the below format. Please personalized the Subject attractively:
 
 Subject: Boost Customer Traffic for 'merchant_name' – No Upfront Cost
 
@@ -43,7 +43,7 @@ To give you an example, XYZ Coffee in Dubai partnered with us to offer a 15% dis
 
 Visit our website to see success stories https://loyaltytruth.com/zions-cash-rewards-new-case-study/ 
 
-Next Steps 
+Next Steps:
 
 Ready to get started? Complete our quick onboarding form here:  https://forms.gle/Y6dZ2MPPE5Q1K3LC8
 
