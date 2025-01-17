@@ -17,6 +17,7 @@ from langchain_groq import ChatGroq
 from langchain.agents import AgentType
 from langchain_community.llms import Ollama
 from crewai import Agent, Task, Crew, Process, LLM
+from langchain_openai import ChatOpenAI  # Import OpenAI's Chat model
 
 # Page Configuration
 st.set_page_config(
@@ -41,6 +42,8 @@ if 'email_results' not in st.session_state:
     st.session_state.email_results = None
 if 'api_key' not in st.session_state:
     st.session_state.api_key = ""
+if 'openai_api_key' not in st.session_state:
+    st.session_state.openai_api_key = ""  # New session state for OpenAI API key
 if 'interaction_history' not in st.session_state:
     st.session_state.interaction_history = []  # Store all interactions (queries, results, emails)
 if 'selected_db' not in st.session_state:
@@ -121,10 +124,19 @@ def get_api_key():
     """Function to get API Key from user input"""
     return st.sidebar.text_input("Enter Your API Key:", type="password")
 
+def get_openai_api_key():
+    """Function to get OpenAI API Key from user input"""
+    return st.sidebar.text_input("Enter Your OpenAI API Key:", type="password")
+
 # Get API Key
 api_key = get_api_key()
 if api_key:
     st.session_state.api_key = api_key
+
+# Get OpenAI API Key
+openai_api_key = get_openai_api_key()
+if openai_api_key:
+    st.session_state.openai_api_key = openai_api_key
 
 # Database Selection
 db_options = ["merchant_data_dubai.db", "merchant_data_singapore.db"]
@@ -265,15 +277,18 @@ if st.session_state.interaction_history:
                 if st.button(f"Generate Emails For Above Extracted Merchants", key=f"generate_emails_{idx}"):
                     with st.spinner("Generating emails..."):
                         try:
-                            # Define email generation agent 
-                            llm_email = LLM(model="groq/llama-3.1-70b-versatile", api_key=st.session_state.api_key)
+                            # Define email generation agent using GPT-4
                             email_agent = Agent(
                                 role="Email Content Generator",
                                 goal="Generate personalized marketing emails for merchants.",
                                 backstory="You are a marketing expert named 'Jayan Nimna' of Pulse iD fintech company skilled in crafting professional and engaging emails for merchants.",
                                 verbose=True,
                                 allow_delegation=False,
-                                llm=llm_email 
+                                llm=ChatOpenAI(
+                                    model="gpt-4",
+                                    api_key=st.session_state.openai_api_key,
+                                    temperature=0.7
+                                )
                             )
 
                             # Read the task description from the selected template file
