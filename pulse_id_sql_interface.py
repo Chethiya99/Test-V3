@@ -17,7 +17,6 @@ from langchain_groq import ChatGroq
 from langchain.agents import AgentType
 from langchain_community.llms import Ollama
 from crewai import Agent, Task, Crew, Process, LLM
-from langchain_openai import ChatOpenAI  # Import OpenAI's ChatOpenAI for email generation
 
 # Page Configuration
 st.set_page_config(
@@ -40,8 +39,8 @@ if 'extraction_results' not in st.session_state:
     st.session_state.extraction_results = None
 if 'email_results' not in st.session_state:
     st.session_state.email_results = None
-if 'openai_api_key' not in st.session_state:
-    st.session_state.openai_api_key = ""  # OpenAI API key
+if 'api_key' not in st.session_state:
+    st.session_state.api_key = ""
 if 'interaction_history' not in st.session_state:
     st.session_state.interaction_history = []  # Store all interactions (queries, results, emails)
 if 'selected_db' not in st.session_state:
@@ -52,11 +51,6 @@ if 'selected_template' not in st.session_state:
     st.session_state.selected_template = "email_task_description1.txt"  # Default template
 if 'trigger_rerun' not in st.session_state:
     st.session_state.trigger_rerun = False  # Track if a re-run is needed
-if 'user_query' not in st.session_state:
-    st.session_state.user_query = ""  # Track the user's query
-
-# Hardcoded Groq API Key
-GROQ_API_KEY = "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"  # Replace with your actual Groq API key
 
 # Function to read the email task description from a text file
 def read_email_task_description(file_path):
@@ -123,20 +117,14 @@ st.markdown(
 # Sidebar Configuration
 st.sidebar.header("Settings")
 
-def get_openai_api_key():
-    """Function to get OpenAI API Key from user input"""
-    return st.sidebar.text_input("Enter Your OpenAI API Key:", type="password", key="openai_api_key_input")
+def get_api_key():
+    """Function to get API Key from user input"""
+    return st.sidebar.text_input("Enter Your API Key:", type="password")
 
-# Get OpenAI API Key
-openai_api_key = get_openai_api_key()
-
-# Add a button to confirm the API key
-if st.sidebar.button("Set OpenAI API Key"):
-    if openai_api_key:
-        st.session_state.openai_api_key = openai_api_key
-        st.sidebar.success("✅ OpenAI API Key set successfully!")
-    else:
-        st.sidebar.warning("⚠️ Please enter your OpenAI API key.")
+# Get API Key
+api_key = get_api_key()
+if api_key:
+    st.session_state.api_key = api_key
 
 # Database Selection
 db_options = ["merchant_data_dubai.db", "merchant_data_singapore.db"]
@@ -157,13 +145,13 @@ st.session_state.selected_template = st.sidebar.selectbox("Select Email Template
 st.sidebar.success(f"✅ Selected Template: {st.session_state.selected_template}")
 
 # Initialize SQL Database and Agent
-if st.session_state.selected_db and not st.session_state.db_initialized:
+if st.session_state.selected_db and api_key and not st.session_state.db_initialized:
     try:
-        # Initialize Groq LLM with hardcoded API key
+        # Initialize Groq LLM
         llm = ChatGroq(
             temperature=0,
             model_name=model_name,
-            api_key='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'  # Use hardcoded Groq API key
+            api_key=st.session_state.api_key
         )
 
         # Initialize SQLDatabase
@@ -174,8 +162,7 @@ if st.session_state.selected_db and not st.session_state.db_initialized:
             llm=llm,
             db=st.session_state.db,
             agent_type=AgentType.ZERO_SHOT_REACT_DESCRIPTION,
-            verbose=True,
-            handle_parsing_errors=True  # Handle parsing errors gracefully
+            verbose=True
         )
         st.session_state.db_initialized = True  # Mark database as initialized
         st.sidebar.success("✅ Database and LLM Connected Successfully!")
@@ -202,12 +189,61 @@ def render_query_section():
             st.session_state.trigger_rerun = True  # Trigger a re-run to process the query
     
     # Text area for user input
-    user_query = st.text_area("Enter your query:", placeholder="E.g., Show top 10 merchants and their emails.", key=f"query_{len(st.session_state.interaction_history)}", value=st.session_state.user_query)
+    user_query = st.text_area("Enter your query:", placeholder="E.g., Show top 10 merchants and their emails.", key=f"query_{len(st.session_state.interaction_history)}", value=st.session_state.get('user_query', ''))
     
     if st.button("Run Query", key=f"run_query_{len(st.session_state.interaction_history)}"):
         if user_query:
-            st.session_state.user_query = user_query  # Store the query in session state
-            st.session_state.trigger_rerun = True  # Trigger a re-run to process the query
+            with st.spinner("Running query..."):
+                try:
+                    # Define company details and agent role
+                    company_details = """
+                    You are a dedicated agent specializing in sourcing merchants from various regions for PulseiD. your current focus includes a strong network of merchants in the restaurant industry.
+                    Additionally, you have the expertise to craft effective and professional emails tailored to your needs.No matter what the question ask, always give the google review also. If possible, Please always try to give answers in a single table format or point wise.
+                    """
+
+                    # Prepend company details to the user's query
+                    full_query = f"{company_details}\n\nUser Query: {user_query}"
+
+                    # Execute the query using the agent
+                    result = st.session_state.agent_executor.invoke(full_query)
+                    st.session_state.raw_output = result['output'] if isinstance(result, dict) else result
+                    
+                    # Process raw output using an extraction agent 
+                    extractor_llm = LLM(model="groq/llama-3.1-70b-versatile", api_key=st.session_state.api_key)
+                    extractor_agent = Agent(
+                        role="Data Extractor",
+                        goal="Extract merchants, emails, google reviews from the raw output if they are only available.",
+                        backstory="You are an expert in extracting structured information from text.",
+                        provider="Groq",
+                        llm=extractor_llm 
+                    )
+                    
+                    extract_task = Task(
+                        description=f"Extract a list of 'merchants' and their 'emails', 'google reviews' from the following text:\n\n{st.session_state.raw_output}",
+                        agent=extractor_agent,
+                        expected_output="Please return A structured list of merchant names, their associated email addresses along with their google reviews extracted from the given text. If any merchant name or email are unavailable, return 'errorhappened'.if available, extract them"
+                    )
+                    
+                    # Crew execution for extraction 
+                    extraction_crew = Crew(agents=[extractor_agent], tasks=[extract_task], process=Process.sequential)
+                    extraction_results = extraction_crew.kickoff()
+                    st.session_state.extraction_results = extraction_results if extraction_results else ""
+                    st.session_state.merchant_data = st.session_state.extraction_results
+                    
+                    # Append the query and results to the interaction history
+                    st.session_state.interaction_history.append({
+                        "type": "query",
+                        "content": {
+                            "query": user_query,
+                            "raw_output": st.session_state.raw_output,
+                            "extraction_results": st.session_state.extraction_results
+                        }
+                    })
+                    
+                    # Trigger a re-run to update the UI
+                    st.session_state.trigger_rerun = True
+                except Exception as e:
+                    st.error(f"Error executing query: {str(e)}")
         else:
             st.warning("⚠️ Please enter a query before clicking 'Run Query'.")
 
@@ -229,19 +265,15 @@ if st.session_state.interaction_history:
                 if st.button(f"Generate Emails For Above Extracted Merchants", key=f"generate_emails_{idx}"):
                     with st.spinner("Generating emails..."):
                         try:
-                            # Define email generation agent using OpenAI
-                            llm_email = ChatOpenAI(  # Use OpenAI for email generation
-                                temperature=0.7,
-                                model_name="gpt-4",  # Use GPT-4 or gpt-3.5-turbo
-                                api_key=st.session_state.openai_api_key  # Use OpenAI API key
-                            )
+                            # Define email generation agent 
+                            llm_email = LLM(model="groq/llama-3.1-70b-versatile", api_key=st.session_state.api_key)
                             email_agent = Agent(
                                 role="Email Content Generator",
                                 goal="Generate personalized marketing emails for merchants.",
                                 backstory="You are a marketing expert named 'Jayan Nimna' of Pulse iD fintech company skilled in crafting professional and engaging emails for merchants.",
                                 verbose=True,
                                 allow_delegation=False,
-                                llm=llm_email  # Use OpenAI's LLM here
+                                llm=llm_email 
                             )
 
                             # Read the task description from the selected template file
