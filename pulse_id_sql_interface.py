@@ -13,10 +13,11 @@ import pandas as pd
 import streamlit as st
 from langchain_community.utilities import SQLDatabase
 from langchain_community.agent_toolkits import create_sql_agent
-from langchain_openai import ChatOpenAI  # Replace ChatGroq with ChatOpenAI
+from langchain_groq import ChatGroq
 from langchain.agents import AgentType
 from langchain_community.llms import Ollama
 from crewai import Agent, Task, Crew, Process, LLM
+from langchain_openai import ChatOpenAI  # Import OpenAI's ChatOpenAI for email generation
 
 # Page Configuration
 st.set_page_config(
@@ -137,7 +138,7 @@ if new_selected_db != st.session_state.selected_db:
     st.sidebar.success(f"✅ Switched to database: {st.session_state.selected_db}")
 
 # Model Selection
-model_name = st.sidebar.selectbox("Select Model:", ["gpt-4", "gpt-3.5-turbo"])  # OpenAI models
+model_name = st.sidebar.selectbox("Select Model:", ["llama3-70b-8192", "llama-3.1-70b-versatile"])
 
 # Email Template Selection
 template_options = ["email_task_description1.txt", "email_task_description2.txt", "email_task_description3.txt"]
@@ -147,8 +148,8 @@ st.sidebar.success(f"✅ Selected Template: {st.session_state.selected_template}
 # Initialize SQL Database and Agent
 if st.session_state.selected_db and api_key and not st.session_state.db_initialized:
     try:
-        # Initialize OpenAI LLM
-        llm = ChatOpenAI(
+        # Initialize Groq LLM
+        llm = ChatGroq(
             temperature=0,
             model_name=model_name,
             api_key=st.session_state.api_key
@@ -162,7 +163,8 @@ if st.session_state.selected_db and api_key and not st.session_state.db_initiali
             llm=llm,
             db=st.session_state.db,
             agent_type=AgentType.ZERO_SHOT_REACT_DESCRIPTION,
-            verbose=True
+            verbose=True,
+            handle_parsing_errors=True  # Handle parsing errors gracefully
         )
         st.session_state.db_initialized = True  # Mark database as initialized
         st.sidebar.success("✅ Database and LLM Connected Successfully!")
@@ -197,7 +199,8 @@ def render_query_section():
                 try:
                     # Define company details and agent role
                     company_details = """
-                    no matter what the question is, give google review also.
+                    You are a dedicated agent specializing in sourcing merchants from various regions for PulseiD. your current focus includes a strong network of merchants in the restaurant industry.
+                    Additionally, you have the expertise to craft effective and professional emails tailored to your needs.No matter what the question ask, always give the google review also. If possible, Please always try to give answers in a single table format or point wise.
                     """
 
                     # Prepend company details to the user's query
@@ -208,19 +211,19 @@ def render_query_section():
                     st.session_state.raw_output = result['output'] if isinstance(result, dict) else result
                     
                     # Process raw output using an extraction agent 
-                    extractor_llm = LLM(model="gpt-4", api_key=st.session_state.api_key)  # Use OpenAI model
+                    extractor_llm = LLM(model="groq/llama-3.1-70b-versatile", api_key=st.session_state.api_key)
                     extractor_agent = Agent(
                         role="Data Extractor",
-                        goal="Extract merchants, emails, google reviews and anything from the raw output if they are only available.",
+                        goal="Extract merchants, emails, google reviews from the raw output if they are only available.",
                         backstory="You are an expert in extracting structured information from text.",
-                        provider="OpenAI",
+                        provider="Groq",
                         llm=extractor_llm 
                     )
                     
                     extract_task = Task(
-                        description=f"Extract a list of 'merchants' and their 'emails', 'google reviews' and available all from the following text:\n\n{st.session_state.raw_output}",
+                        description=f"Extract a list of 'merchants' and their 'emails', 'google reviews' from the following text:\n\n{st.session_state.raw_output}",
                         agent=extractor_agent,
-                        expected_output="Please return A structured list of merchant names, their associated email addresses and available others along with their google reviews extracted from the given text. If any merchant name or email are unavailable, return 'errorhappened'.if available, extract them"
+                        expected_output="Please return A structured list of merchant names, their associated email addresses along with their google reviews extracted from the given text. If any merchant name or email are unavailable, return 'errorhappened'.if available, extract them"
                     )
                     
                     # Crew execution for extraction 
@@ -264,15 +267,19 @@ if st.session_state.interaction_history:
                 if st.button(f"Generate Emails For Above Extracted Merchants", key=f"generate_emails_{idx}"):
                     with st.spinner("Generating emails..."):
                         try:
-                            # Define email generation agent 
-                            llm_email = LLM(model="gpt-4", api_key=st.session_state.api_key)  # Use OpenAI model
+                            # Define email generation agent using OpenAI
+                            llm_email = ChatOpenAI(  # Use OpenAI for email generation
+                                temperature=0.7,
+                                model_name="gpt-4",  # Use GPT-4 or gpt-3.5-turbo
+                                api_key=st.session_state.api_key  # Ensure this is your OpenAI API key
+                            )
                             email_agent = Agent(
                                 role="Email Content Generator",
                                 goal="Generate personalized marketing emails for merchants.",
                                 backstory="You are a marketing expert named 'Jayan Nimna' of Pulse iD fintech company skilled in crafting professional and engaging emails for merchants.",
                                 verbose=True,
                                 allow_delegation=False,
-                                llm=llm_email 
+                                llm=llm_email  # Use OpenAI's LLM here
                             )
 
                             # Read the task description from the selected template file
