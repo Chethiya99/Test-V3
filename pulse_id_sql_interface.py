@@ -55,15 +55,6 @@ if 'trigger_rerun' not in st.session_state:
 if 'user_query' not in st.session_state:
     st.session_state.user_query = ""  # Track the user's query
 
-def get_openai_api_key():
-    """Function to get OpenAI API Key from user input"""
-    return st.sidebar.text_input("Enter Your OpenAI API Key:", type="password", key="openai_api_key")
-
-# Get OpenAI API Key
-openai_api_key = get_openai_api_key()
-if openai_api_key:
-    st.session_state.openai_api_key = openai_api_key
-
 # Hardcoded Groq API Key
 GROQ_API_KEY = "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"  # Replace with your actual Groq API key
 
@@ -132,7 +123,20 @@ st.markdown(
 # Sidebar Configuration
 st.sidebar.header("Settings")
 
+def get_openai_api_key():
+    """Function to get OpenAI API Key from user input"""
+    return st.sidebar.text_input("Enter Your OpenAI API Key:", type="password", key="openai_api_key_input")
 
+# Get OpenAI API Key
+openai_api_key = get_openai_api_key()
+
+# Add a button to confirm the API key
+if st.sidebar.button("Set OpenAI API Key"):
+    if openai_api_key:
+        st.session_state.openai_api_key = openai_api_key
+        st.sidebar.success("✅ OpenAI API Key set successfully!")
+    else:
+        st.sidebar.warning("⚠️ Please enter your OpenAI API key.")
 
 # Database Selection
 db_options = ["merchant_data_dubai.db", "merchant_data_singapore.db"]
