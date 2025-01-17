@@ -152,7 +152,7 @@ if st.session_state.selected_db and api_key and not st.session_state.db_initiali
         llm = ChatGroq(
             temperature=0,
             model_name=model_name,
-            api_key="your_groq_api_key_here"  # Hardcoded Groq API key
+            api_key="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"  # Hardcoded Groq API key
         )
 
         # Initialize SQLDatabase
@@ -210,7 +210,7 @@ def render_query_section():
                     st.session_state.raw_output = result['output'] if isinstance(result, dict) else result
                     
                     # Process raw output using an extraction agent 
-                    extractor_llm = LLM(model="groq/llama-3.1-70b-versatile", api_key="your_groq_api_key_here")  # Hardcoded Groq API key
+                    extractor_llm = LLM(model="groq/llama-3.1-70b-versatile", api_key="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")  # Hardcoded Groq API key
                     extractor_agent = Agent(
                         role="Data Extractor",
                         goal="Extract merchants, emails, google reviews from the raw output if they are only available.",
