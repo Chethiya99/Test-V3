@@ -137,7 +137,7 @@ if new_selected_db != st.session_state.selected_db:
     st.sidebar.success(f"✅ Switched to database: {st.session_state.selected_db}")
 
 # Model Selection
-model_name = st.sidebar.selectbox("Select Model:", ["gpt-4", "gpt-3.5-turbo"])  # OpenAI models
+model_name = st.sidebar.selectbox("Select Model:", ["gpt-4o", "gpt-3.5-turbo"])  # OpenAI models
 
 # Email Template Selection
 template_options = ["email_task_description1.txt", "email_task_description2.txt", "email_task_description3.txt"]
