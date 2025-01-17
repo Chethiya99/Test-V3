@@ -17,7 +17,7 @@ from langchain_groq import ChatGroq
 from langchain.agents import AgentType
 from langchain_community.llms import Ollama
 from crewai import Agent, Task, Crew, Process, LLM
-from langchain_openai import ChatOpenAI  # Import OpenAI's ChatOpenAI for email generation
+from langchain_openai import OpenAI  # Import OpenAI
 
 # Page Configuration
 st.set_page_config(
@@ -40,8 +40,8 @@ if 'extraction_results' not in st.session_state:
     st.session_state.extraction_results = None
 if 'email_results' not in st.session_state:
     st.session_state.email_results = None
-if 'openai_api_key' not in st.session_state:
-    st.session_state.openai_api_key = ""  # OpenAI API key
+if 'api_key' not in st.session_state:
+    st.session_state.api_key = ""
 if 'interaction_history' not in st.session_state:
     st.session_state.interaction_history = []  # Store all interactions (queries, results, emails)
 if 'selected_db' not in st.session_state:
@@ -52,9 +52,6 @@ if 'selected_template' not in st.session_state:
     st.session_state.selected_template = "email_task_description1.txt"  # Default template
 if 'trigger_rerun' not in st.session_state:
     st.session_state.trigger_rerun = False  # Track if a re-run is needed
-
-# Hardcoded Groq API Key
-GROQ_API_KEY = "your_groq_api_key_here"  # Replace with your actual Groq API key
 
 # Function to read the email task description from a text file
 def read_email_task_description(file_path):
@@ -121,14 +118,14 @@ st.markdown(
 # Sidebar Configuration
 st.sidebar.header("Settings")
 
-def get_openai_api_key():
-    """Function to get OpenAI API Key from user input"""
-    return st.sidebar.text_input("Enter Your OpenAI API Key:", type="password", key="openai_api_key")
+def get_api_key():
+    """Function to get API Key from user input"""
+    return st.sidebar.text_input("Enter Your OpenAI API Key:", type="password")
 
-# Get OpenAI API Key
-openai_api_key = get_openai_api_key()
-if openai_api_key:
-    st.session_state.openai_api_key = openai_api_key
+# Get API Key
+api_key = get_api_key()
+if api_key:
+    st.session_state.api_key = api_key
 
 # Database Selection
 db_options = ["merchant_data_dubai.db", "merchant_data_singapore.db"]
@@ -149,13 +146,13 @@ st.session_state.selected_template = st.sidebar.selectbox("Select Email Template
 st.sidebar.success(f"✅ Selected Template: {st.session_state.selected_template}")
 
 # Initialize SQL Database and Agent
-if st.session_state.selected_db and not st.session_state.db_initialized:
+if st.session_state.selected_db and api_key and not st.session_state.db_initialized:
     try:
-        # Initialize Groq LLM with hardcoded API key
+        # Initialize Groq LLM (hardcoded API key)
         llm = ChatGroq(
             temperature=0,
             model_name=model_name,
-            api_key=GROQ_API_KEY  # Use hardcoded Groq API key
+            api_key="your_groq_api_key_here"  # Hardcoded Groq API key
         )
 
         # Initialize SQLDatabase
@@ -166,8 +163,7 @@ if st.session_state.selected_db and not st.session_state.db_initialized:
             llm=llm,
             db=st.session_state.db,
             agent_type=AgentType.ZERO_SHOT_REACT_DESCRIPTION,
-            verbose=True,
-            handle_parsing_errors=True  # Handle parsing errors gracefully
+            verbose=True
         )
         st.session_state.db_initialized = True  # Mark database as initialized
         st.sidebar.success("✅ Database and LLM Connected Successfully!")
@@ -214,7 +210,7 @@ def render_query_section():
                     st.session_state.raw_output = result['output'] if isinstance(result, dict) else result
                     
                     # Process raw output using an extraction agent 
-                    extractor_llm = LLM(model="groq/llama-3.1-70b-versatile", api_key=GROQ_API_KEY)  # Use hardcoded Groq API key
+                    extractor_llm = LLM(model="groq/llama-3.1-70b-versatile", api_key="your_groq_api_key_here")  # Hardcoded Groq API key
                     extractor_agent = Agent(
                         role="Data Extractor",
                         goal="Extract merchants, emails, google reviews from the raw output if they are only available.",
@@ -271,18 +267,14 @@ if st.session_state.interaction_history:
                     with st.spinner("Generating emails..."):
                         try:
                             # Define email generation agent using OpenAI
-                            llm_email = ChatOpenAI(  # Use OpenAI for email generation
-                                temperature=0.7,
-                                model_name="gpt-4",  # Use GPT-4 or gpt-3.5-turbo
-                                api_key=st.session_state.openai_api_key  # Use OpenAI API key
-                            )
+                            llm_email = OpenAI(api_key=st.session_state.api_key, model="gpt-4")  # Use OpenAI's GPT-4
                             email_agent = Agent(
                                 role="Email Content Generator",
                                 goal="Generate personalized marketing emails for merchants.",
                                 backstory="You are a marketing expert named 'Jayan Nimna' of Pulse iD fintech company skilled in crafting professional and engaging emails for merchants.",
                                 verbose=True,
                                 allow_delegation=False,
-                                llm=llm_email  # Use OpenAI's LLM here
+                                llm=llm_email 
                             )
 
                             # Read the task description from the selected template file
