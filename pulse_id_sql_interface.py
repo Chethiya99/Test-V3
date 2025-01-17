@@ -211,7 +211,7 @@ def render_query_section():
                     extractor_llm = LLM(model="gpt-4", api_key=st.session_state.api_key)  # Use OpenAI model
                     extractor_agent = Agent(
                         role="Data Extractor",
-                        goal="Extract merchants, emails, google reviews from the raw output if they are only available.",
+                        goal="Extract merchants, emails, google reviews and anything from the raw output if they are only available.",
                         backstory="You are an expert in extracting structured information from text.",
                         provider="OpenAI",
                         llm=extractor_llm 
