@@ -54,7 +54,7 @@ if 'trigger_rerun' not in st.session_state:
     st.session_state.trigger_rerun = False  # Track if a re-run is needed
 
 # Hardcoded Groq API Key
-GROQ_API_KEY = "your_groq_api_key_here"  # Replace with your actual Groq API key
+GROQ_API_KEY = "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"  # Replace with your actual Groq API key
 
 # Function to read the email task description from a text file
 def read_email_task_description(file_path):
