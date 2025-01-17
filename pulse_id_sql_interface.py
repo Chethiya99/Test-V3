@@ -137,7 +137,7 @@ if new_selected_db != st.session_state.selected_db:
     st.sidebar.success(f"✅ Switched to database: {st.session_state.selected_db}")
 
 # Model Selection
-model_name = st.sidebar.selectbox("Select Model:", ["gpt-4o", "gpt-3.5-turbo"])  # OpenAI models
+model_name = st.sidebar.selectbox("Select Model:", ["gpt-4", "gpt-3.5-turbo"])  # OpenAI models
 
 # Email Template Selection
 template_options = ["email_task_description1.txt", "email_task_description2.txt", "email_task_description3.txt"]
@@ -198,7 +198,7 @@ def render_query_section():
                     # Define company details and agent role
                     company_details = """
                     You are a dedicated agent specializing in sourcing merchants from various regions for PulseiD. your current focus includes a strong network of merchants in the restaurant industry.
-                    Additionally, you have the expertise to craft effective and professional emails tailored to your needs.No matter what the question ask, always give the google review also. If possible, Please always try to give answers in a single table format or point wise.
+                    Additionally, you have the expertise to craft effective and professional emails tailored to your needs.No matter what the question ask, always give the google review for that question also. If possible, Please always try to give answers in a single table format or point wise.
                     """
 
                     # Prepend company details to the user's query
