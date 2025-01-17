@@ -197,7 +197,7 @@ def render_query_section():
                 try:
                     # Define company details and agent role
                     company_details = """
-                    and the google review also.
+                    no matter what the question is, give google review also.
                     """
 
                     # Prepend company details to the user's query
