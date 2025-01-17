@@ -40,8 +40,10 @@ if 'extraction_results' not in st.session_state:
     st.session_state.extraction_results = None
 if 'email_results' not in st.session_state:
     st.session_state.email_results = None
-if 'api_key' not in st.session_state:
-    st.session_state.api_key = ""
+if 'groq_api_key' not in st.session_state:
+    st.session_state.groq_api_key = ""  # Groq API key
+if 'openai_api_key' not in st.session_state:
+    st.session_state.openai_api_key = ""  # OpenAI API key
 if 'interaction_history' not in st.session_state:
     st.session_state.interaction_history = []  # Store all interactions (queries, results, emails)
 if 'selected_db' not in st.session_state:
@@ -118,14 +120,22 @@ st.markdown(
 # Sidebar Configuration
 st.sidebar.header("Settings")
 
-def get_api_key():
-    """Function to get API Key from user input"""
-    return st.sidebar.text_input("Enter Your API Key:", type="password")
+def get_groq_api_key():
+    """Function to get Groq API Key from user input"""
+    return st.sidebar.text_input("Enter Your Groq API Key:", type="password", key="groq_api_key")
 
-# Get API Key
-api_key = get_api_key()
-if api_key:
-    st.session_state.api_key = api_key
+def get_openai_api_key():
+    """Function to get OpenAI API Key from user input"""
+    return st.sidebar.text_input("Enter Your OpenAI API Key:", type="password", key="openai_api_key")
+
+# Get API Keys
+groq_api_key = get_groq_api_key()
+if groq_api_key:
+    st.session_state.groq_api_key = groq_api_key
+
+openai_api_key = get_openai_api_key()
+if openai_api_key:
+    st.session_state.openai_api_key = openai_api_key
 
 # Database Selection
 db_options = ["merchant_data_dubai.db", "merchant_data_singapore.db"]
@@ -146,13 +156,13 @@ st.session_state.selected_template = st.sidebar.selectbox("Select Email Template
 st.sidebar.success(f"✅ Selected Template: {st.session_state.selected_template}")
 
 # Initialize SQL Database and Agent
-if st.session_state.selected_db and api_key and not st.session_state.db_initialized:
+if st.session_state.selected_db and st.session_state.groq_api_key and not st.session_state.db_initialized:
     try:
         # Initialize Groq LLM
         llm = ChatGroq(
             temperature=0,
             model_name=model_name,
-            api_key=st.session_state.api_key
+            api_key=st.session_state.groq_api_key
         )
 
         # Initialize SQLDatabase
@@ -211,7 +221,7 @@ def render_query_section():
                     st.session_state.raw_output = result['output'] if isinstance(result, dict) else result
                     
                     # Process raw output using an extraction agent 
-                    extractor_llm = LLM(model="groq/llama-3.1-70b-versatile", api_key=st.session_state.api_key)
+                    extractor_llm = LLM(model="groq/llama-3.1-70b-versatile", api_key=st.session_state.groq_api_key)
                     extractor_agent = Agent(
                         role="Data Extractor",
                         goal="Extract merchants, emails, google reviews from the raw output if they are only available.",
@@ -271,7 +281,7 @@ if st.session_state.interaction_history:
                             llm_email = ChatOpenAI(  # Use OpenAI for email generation
                                 temperature=0.7,
                                 model_name="gpt-4",  # Use GPT-4 or gpt-3.5-turbo
-                                api_key=st.session_state.api_key  # Ensure this is your OpenAI API key
+                                api_key=st.session_state.openai_api_key  # Use OpenAI API key
                             )
                             email_agent = Agent(
                                 role="Email Content Generator",
