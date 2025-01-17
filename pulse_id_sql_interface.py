@@ -162,8 +162,7 @@ if st.session_state.selected_db and api_key and not st.session_state.db_initiali
             llm=llm,
             db=st.session_state.db,
             agent_type=AgentType.ZERO_SHOT_REACT_DESCRIPTION,
-            verbose=True,
-            handle_parsing_errors=True
+            verbose=True
         )
         st.session_state.db_initialized = True  # Mark database as initialized
         st.sidebar.success("✅ Database and LLM Connected Successfully!")
@@ -198,7 +197,8 @@ def render_query_section():
                 try:
                     # Define company details and agent role
                     company_details = """
-                    No matter what the question ask, always give the google review for that question also. If possible, Please always try to give answers in a single table format or point wise.
+                    You are a dedicated agent specializing in sourcing merchants from various regions for PulseiD. your current focus includes a strong network of merchants in the restaurant industry.
+                    Additionally, you have the expertise to craft effective and professional emails tailored to your needs.No matter what the question ask, always give the google review also. If possible, Please always try to give answers in a single table format or point wise.
                     """
 
                     # Prepend company details to the user's query
@@ -221,7 +221,7 @@ def render_query_section():
                     extract_task = Task(
                         description=f"Extract a list of 'merchants' and their 'emails', 'google reviews' from the following text:\n\n{st.session_state.raw_output}",
                         agent=extractor_agent,
-                        expected_output="Please return A structured table of merchant names, their associated email addresses along with their google reviews extracted from the given text. If any merchant name or email are unavailable, return 'errorhappened'.if available, extract them"
+                        expected_output="Please return A structured list of merchant names, their associated email addresses along with their google reviews extracted from the given text. If any merchant name or email are unavailable, return 'errorhappened'.if available, extract them"
                     )
                     
                     # Crew execution for extraction 
