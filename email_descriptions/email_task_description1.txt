@@ -6,7 +6,7 @@ Use the below format:
 
 Subject: Boost Customer Traffic for 'merchant_name' – No Upfront Cost
 
-Randomly select one of the following opening lines and make it more personalized and use it to start the email:
+Randomly select one of the following opening lines and make it more personalized and use it to start the email. Please use nice formatings:
 
 1. Dear 'merchant_name',  'merchant_email',
     
