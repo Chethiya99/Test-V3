@@ -13,7 +13,7 @@ import pandas as pd
 import streamlit as st
 from langchain_community.utilities import SQLDatabase
 from langchain_community.agent_toolkits import create_sql_agent
-from langchain_groq import ChatGroq
+from langchain_openai import ChatOpenAI  # Replace ChatGroq with ChatOpenAI
 from langchain.agents import AgentType
 from langchain_community.llms import Ollama
 from crewai import Agent, Task, Crew, Process, LLM
@@ -137,7 +137,7 @@ if new_selected_db != st.session_state.selected_db:
     st.sidebar.success(f"✅ Switched to database: {st.session_state.selected_db}")
 
 # Model Selection
-model_name = st.sidebar.selectbox("Select Model:", ["llama3-70b-8192", "llama-3.1-70b-versatile"])
+model_name = st.sidebar.selectbox("Select Model:", ["gpt-4", "gpt-3.5-turbo"])  # OpenAI models
 
 # Email Template Selection
 template_options = ["email_task_description1.txt", "email_task_description2.txt", "email_task_description3.txt"]
@@ -147,8 +147,8 @@ st.sidebar.success(f"✅ Selected Template: {st.session_state.selected_template}
 # Initialize SQL Database and Agent
 if st.session_state.selected_db and api_key and not st.session_state.db_initialized:
     try:
-        # Initialize Groq LLM
-        llm = ChatGroq(
+        # Initialize OpenAI LLM
+        llm = ChatOpenAI(
             temperature=0,
             model_name=model_name,
             api_key=st.session_state.api_key
@@ -209,12 +209,12 @@ def render_query_section():
                     st.session_state.raw_output = result['output'] if isinstance(result, dict) else result
                     
                     # Process raw output using an extraction agent 
-                    extractor_llm = LLM(model="groq/llama-3.1-70b-versatile", api_key=st.session_state.api_key)
+                    extractor_llm = LLM(model="gpt-4", api_key=st.session_state.api_key)  # Use OpenAI model
                     extractor_agent = Agent(
                         role="Data Extractor",
                         goal="Extract merchants, emails, google reviews from the raw output if they are only available.",
                         backstory="You are an expert in extracting structured information from text.",
-                        provider="Groq",
+                        provider="OpenAI",
                         llm=extractor_llm 
                     )
                     
@@ -266,7 +266,7 @@ if st.session_state.interaction_history:
                     with st.spinner("Generating emails..."):
                         try:
                             # Define email generation agent 
-                            llm_email = LLM(model="groq/llama-3.1-70b-versatile", api_key=st.session_state.api_key)
+                            llm_email = LLM(model="gpt-4", api_key=st.session_state.api_key)  # Use OpenAI model
                             email_agent = Agent(
                                 role="Email Content Generator",
                                 goal="Generate personalized marketing emails for merchants.",
