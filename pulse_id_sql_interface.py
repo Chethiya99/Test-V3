@@ -139,8 +139,21 @@ if openai_api_key:
     st.session_state.openai_api_key = openai_api_key
     st.write(f"OpenAI API Key: {st.session_state.openai_api_key}")
 
-
-email_llm = ChatOpenAI(model="gpt-4", api_key=st.session_state.openai_api_key,temperature=0.7)
+    # Initialize email_llm only if the API key is available
+    if 'email_llm' not in st.session_state:
+        try:
+            st.session_state.email_llm = ChatOpenAI(
+                model="gpt-4",
+                api_key=st.session_state.openai_api_key,
+                temperature=0.7
+            )
+            st.sidebar.success("✅ OpenAI model initialized successfully!")
+        except Exception as e:
+            st.error(f"Error initializing OpenAI model: {e}")
+            st.session_state.email_llm = None  # Reset email_llm if initialization fails
+else:
+    st.session_state.email_llm = None  # Reset email_llm if no key is provided
+    st.sidebar.warning("⚠️ Please enter a valid OpenAI API key to enable email generation.")
         
 
 
