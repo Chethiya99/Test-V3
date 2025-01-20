@@ -1,4 +1,3 @@
-same error bro but i will help u with a tip.
 __import__('pysqlite3')
 import sys
 import os
