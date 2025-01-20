@@ -140,7 +140,7 @@ if openai_api_key:
     st.write(f"OpenAI API Key: {st.session_state.openai_api_key}")
 
 
-email_llm = ChatOpenAI(model="gpt-4", api_key=st.session_state.openai_api_key,temperature=0.7
+email_llm = ChatOpenAI(model="gpt-4", api_key=st.session_state.openai_api_key,temperature=0.7)
         
 
 
