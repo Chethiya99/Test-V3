@@ -304,7 +304,7 @@ if st.session_state.interaction_history:
                                 backstory="You are a marketing expert named 'Jayan Nimna' of Pulse iD fintech company skilled in crafting professional and engaging emails for merchants.",
                                 verbose=True,
                                 allow_delegation=False,
-                                llm=email_llm
+                                llm=st.session_state.email_llm
                             )
 
                             # Read the task description from the selected template file
