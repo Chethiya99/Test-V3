@@ -103,6 +103,14 @@ def store_sent_email(merchant_id, email, sent_time):
         st.error(f"Error storing email data: {str(e)}")
         return False
 
+# Function to extract the subject from the email content
+def extract_subject(email_content):
+    # Assuming the subject is in the format "Subject: <subject>"
+    subject_line = email_content.split("\n")[0]
+    if subject_line.startswith("Subject:"):
+        return subject_line[len("Subject:"):].strip()
+    return "Pulse iD Partnership"  # Default subject if not found
+
 # Header Section with Title and Logo
 st.image("logo.png", width=150)  # Ensure you have your logo in the working directory
 st.markdown(
@@ -283,7 +291,7 @@ if st.session_state.interaction_history:
                             task = Task(
                                 description=email_task_description.format(merchant_data=interaction['content']['extraction_results'].raw),
                                 agent=email_agent,
-                                expected_output="Marketing emails for each selected merchant, tailored to their business details. Please use a invisible line to seperate each emails"
+                                expected_output="Marketing emails for each selected merchant, tailored to their business details. Please use a invisible line to seperate each emails. Include the subject in the first line of the email content in the format 'Subject: <subject>'."
                             )
 
                             # Crew execution 
@@ -298,6 +306,9 @@ if st.session_state.interaction_history:
                                 # Store each email separately in the interaction history
                                 for i, email_body in enumerate(individual_emails):
                                     if email_body.strip():  # Skip empty emails
+                                        # Extract the subject from the email content
+                                        subject = extract_subject(email_body)
+                                        
                                         # Ensure the email body is properly formatted as HTML
                                         formatted_email_body = f"""
                                         <html>
@@ -311,6 +322,7 @@ if st.session_state.interaction_history:
                                         st.session_state.interaction_history.append({
                                             "type": "email",
                                             "content": formatted_email_body,
+                                            "subject": subject,  # Store the subject
                                             "index": len(st.session_state.interaction_history) 
                                         })
                                 
@@ -336,8 +348,11 @@ if st.session_state.interaction_history:
                         sender_email = "satoshinakumuto@gmail.com"
                         sender_password = "giha zfat jiqz hpbo"
 
+                        # Use the stored subject from the interaction history
+                        subject = interaction.get('subject', 'Pulse iD Partnership')
+
                         # Send the email
-                        if send_email(sender_email, sender_password, receiver_email, "Subject: Pulse iD Partnership", interaction['content']):
+                        if send_email(sender_email, sender_password, receiver_email, subject, interaction['content']):
                             # Store the sent email data in the database
                             sent_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                             if store_sent_email(merchant_id, receiver_email, sent_time):
@@ -364,4 +379,4 @@ st.markdown("---")
 st.markdown(
     "<div style='text-align: center; font-size: 14px;'>Powered by <strong>Pulse iD</strong> | Built with 🐍 Python and Streamlit</div>",
     unsafe_allow_html=True 
-) 
+)
