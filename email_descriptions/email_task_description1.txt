@@ -1,4 +1,4 @@
-Please Generate professional marketing emails for the following merchants and their emails to pitch them.u can use simple emojis also and please replace xyz with actual merchants based on singapore region:
+Please Generate professional marketing emails for the following merchants and their emails to pitch them.u can use simple emojis also:
 
 {merchant_data}
 
