@@ -315,14 +315,11 @@ if st.session_state.interaction_history:
                                 # Store each email separately in the interaction history
                                 for i, email_body in enumerate(individual_emails):
                                     if email_body.strip():  # Skip empty emails
-                                        # Extract the subject and clean the email body
-                                        subject, cleaned_body = extract_subject_and_clean_body(email_body)
-                                        
                                         # Ensure the email body is properly formatted as HTML
                                         formatted_email_body = f"""
                                         <html>
                                             <body>
-                                                {cleaned_body.replace("\n", "<br>")}  
+                                                {email_body.replace("\n", "<br>")}  
                                             </body>
                                         </html>
                                         """
@@ -331,7 +328,6 @@ if st.session_state.interaction_history:
                                         st.session_state.interaction_history.append({
                                             "type": "email",
                                             "content": formatted_email_body,
-                                            "subject": subject,  # Store the subject
                                             "index": len(st.session_state.interaction_history) 
                                         })
                                 
@@ -357,11 +353,20 @@ if st.session_state.interaction_history:
                         sender_email = "satoshinakumuto@gmail.com"
                         sender_password = "giha zfat jiqz hpbo"
 
-                        # Use the stored subject from the interaction history
-                        subject = interaction.get('subject', 'Pulse iD Partnership')
+                        # Extract the subject and clean the email body
+                        subject, cleaned_body = extract_subject_and_clean_body(interaction['content'])
+
+                        # Ensure the cleaned body is properly formatted as HTML
+                        formatted_cleaned_body = f"""
+                        <html>
+                            <body>
+                                {cleaned_body.replace("\n", "<br>")}  
+                            </body>
+                        </html>
+                        """
 
                         # Send the email
-                        if send_email(sender_email, sender_password, receiver_email, subject, interaction['content']):
+                        if send_email(sender_email, sender_password, receiver_email, subject, formatted_cleaned_body):
                             # Store the sent email data in the database
                             sent_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                             if store_sent_email(merchant_id, receiver_email, sent_time):
