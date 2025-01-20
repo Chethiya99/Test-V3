@@ -137,7 +137,7 @@ if new_selected_db != st.session_state.selected_db:
     st.sidebar.success(f"✅ Switched to database: {st.session_state.selected_db}")
 
 # Model Selection
-model_name = st.sidebar.selectbox("Select Model:", ["gpt-4", "gpt-3.5-turbo"])  # OpenAI models
+model_name = st.sidebar.selectbox("Select Model:", ["gpt-4o", "gpt-3.5-turbo"])  # OpenAI models
 
 # Email Template Selection
 template_options = ["email_task_description1.txt", "email_task_description2.txt", "email_task_description3.txt"]
@@ -197,7 +197,7 @@ def render_query_section():
                 try:
                     # Define company details and agent role
                     company_details = """
-                   No matter what the question ask, always give the google review also. If possible, Please always try to give answers in a single table format or point wise.
+                   If possible, Please always try to give answers in a single table format or point wise.
                     """
 
                     # Prepend company details to the user's query
@@ -218,7 +218,7 @@ def render_query_section():
                     )
                     
                     extract_task = Task(
-                        description=f"Extract a list of 'merchants' and their 'emails', 'google reviews' from the following text:\n\n{st.session_state.raw_output}",
+                        description=f"Extract a list of 'merchants' and their 'emails', 'google reviews', etc from the following text:\n\n{st.session_state.raw_output}",
                         agent=extractor_agent,
                         expected_output="Please return A structured list of merchant names, their associated email addresses along with their google reviews extracted from the given text. If any merchant name or email are unavailable, return 'errorhappened'.if available, extract them"
                     )
@@ -302,7 +302,7 @@ if st.session_state.interaction_history:
                                         formatted_email_body = f"""
                                         <html>
                                             <body>
-                                                {email_body.replace("\n", "<br>")}  # Replace newlines with <br> tags
+                                                {email_body.replace("\n", "<br>")}  
                                             </body>
                                         </html>
                                         """
@@ -311,7 +311,7 @@ if st.session_state.interaction_history:
                                         st.session_state.interaction_history.append({
                                             "type": "email",
                                             "content": formatted_email_body,
-                                            "index": len(st.session_state.interaction_history)  # Unique index for each email
+                                            "index": len(st.session_state.interaction_history) 
                                         })
                                 
                                 # Trigger a re-run to update the UI
