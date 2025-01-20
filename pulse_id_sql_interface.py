@@ -1,3 +1,4 @@
+# Import necessary libraries
 __import__('pysqlite3')
 import sys
 import os
@@ -40,10 +41,10 @@ if 'extraction_results' not in st.session_state:
     st.session_state.extraction_results = None
 if 'email_results' not in st.session_state:
     st.session_state.email_results = None
-if 'api_key' not in st.session_state:
-    st.session_state.api_key = ""
+if 'groq_api_key' not in st.session_state:
+    st.session_state.groq_api_key = ""  # Session state for Groq API key
 if 'openai_api_key' not in st.session_state:
-    st.session_state.openai_api_key = ""  # New session state for OpenAI API key
+    st.session_state.openai_api_key = ""  # Session state for OpenAI API key
 if 'interaction_history' not in st.session_state:
     st.session_state.interaction_history = []  # Store all interactions (queries, results, emails)
 if 'selected_db' not in st.session_state:
@@ -120,24 +121,27 @@ st.markdown(
 # Sidebar Configuration
 st.sidebar.header("Settings")
 
-def get_api_key():
-    """Function to get API Key from user input"""
-    return st.sidebar.text_input("Enter Your API Key:", type="password")
+def get_groq_api_key():
+    """Function to get Groq API Key from user input"""
+    return st.sidebar.text_input("Enter Your Groq API Key:", type="password")
 
 def get_openai_api_key():
     """Function to get OpenAI API Key from user input"""
     return st.sidebar.text_input("Enter Your OpenAI API Key:", type="password")
 
-# Get API Key
-api_key = get_api_key()
-if api_key:
-    st.session_state.api_key = api_key
+# Get Groq API Key
+groq_api_key = get_groq_api_key()
+if groq_api_key:
+    st.session_state.groq_api_key = groq_api_key
 
 # Get OpenAI API Key
 openai_api_key = get_openai_api_key()
 if openai_api_key:
     st.session_state.openai_api_key = openai_api_key
-    st.write(f"OpenAI API Key: {st.session_state.openai_api_key}")
+
+# Display the keys (optional, for debugging purposes)
+st.sidebar.write(f"Groq API Key: {'*' * len(st.session_state.groq_api_key)}")
+st.sidebar.write(f"OpenAI API Key: {'*' * len(st.session_state.openai_api_key)}")
 
 # Database Selection
 db_options = ["merchant_data_dubai.db", "merchant_data_singapore.db"]
@@ -158,13 +162,13 @@ st.session_state.selected_template = st.sidebar.selectbox("Select Email Template
 st.sidebar.success(f"✅ Selected Template: {st.session_state.selected_template}")
 
 # Initialize SQL Database and Agent
-if st.session_state.selected_db and api_key and not st.session_state.db_initialized:
+if st.session_state.selected_db and st.session_state.groq_api_key and not st.session_state.db_initialized:
     try:
         # Initialize Groq LLM
         llm = ChatGroq(
             temperature=0,
             model_name=model_name,
-            api_key=st.session_state.api_key
+            api_key=st.session_state.groq_api_key  # Use Groq API key from session state
         )
 
         # Initialize SQLDatabase
@@ -222,7 +226,7 @@ def render_query_section():
                     st.session_state.raw_output = result['output'] if isinstance(result, dict) else result
                     
                     # Process raw output using an extraction agent 
-                    extractor_llm = LLM(model="groq/llama-3.1-70b-versatile", api_key=st.session_state.api_key)
+                    extractor_llm = LLM(model="groq/llama-3.1-70b-versatile", api_key=st.session_state.groq_api_key)
                     extractor_agent = Agent(
                         role="Data Extractor",
                         goal="Extract merchants, emails, google reviews from the raw output if they are only available.",
@@ -287,7 +291,7 @@ if st.session_state.interaction_history:
                                 allow_delegation=False,
                                 llm=ChatOpenAI(
                                     model="gpt-4",
-                                    api_key=st.session_state.openai_api_key,
+                                    api_key=st.session_state.openai_api_key,  # Use OpenAI API key from session state
                                     temperature=0.7
                                 )
                             )
