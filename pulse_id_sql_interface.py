@@ -139,6 +139,12 @@ if openai_api_key:
     st.session_state.openai_api_key = openai_api_key
     st.write(f"OpenAI API Key: {st.session_state.openai_api_key}")
 
+
+email_llm = ChatOpenAI(model="gpt-4", api_key=st.session_state.openai_api_key,temperature=0.7
+        
+
+
+
 # Database Selection
 db_options = ["merchant_data_dubai.db", "merchant_data_singapore.db"]
 new_selected_db = st.sidebar.selectbox("Select Database:", db_options, index=db_options.index(st.session_state.selected_db))
@@ -285,11 +291,7 @@ if st.session_state.interaction_history:
                                 backstory="You are a marketing expert named 'Jayan Nimna' of Pulse iD fintech company skilled in crafting professional and engaging emails for merchants.",
                                 verbose=True,
                                 allow_delegation=False,
-                                llm=ChatOpenAI(
-                                    model="gpt-4",
-                                    api_key=st.session_state.openai_api_key,
-                                    temperature=0.7
-                                )
+                                llm=email_llm
                             )
 
                             # Read the task description from the selected template file
