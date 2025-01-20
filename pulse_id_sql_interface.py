@@ -149,7 +149,7 @@ if st.session_state.selected_db and api_key and not st.session_state.db_initiali
     try:
         # Initialize OpenAI LLM
         llm = ChatOpenAI(
-            temperature=0,
+            temperature=0.3,
             model_name=model_name,
             api_key=st.session_state.api_key
         )
@@ -269,7 +269,7 @@ if st.session_state.interaction_history:
                             llm_email = LLM(model="gpt-4", api_key=st.session_state.api_key)  # Use OpenAI model
                             email_agent = Agent(
                                 role="Email Content Generator",
-                                goal="Generate personalized marketing emails for merchants.",
+                                goal="Generate personalized marketing emails for merchants using the descriptions given.",
                                 backstory="You are a marketing expert named 'Jayan Nimna' of Pulse iD fintech company skilled in crafting professional and engaging emails for merchants.",
                                 verbose=True,
                                 allow_delegation=False,
