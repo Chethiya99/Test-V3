@@ -197,8 +197,7 @@ def render_query_section():
                 try:
                     # Define company details and agent role
                     company_details = """
-                    You are a dedicated agent specializing in sourcing merchants from various regions for PulseiD. your current focus includes a strong network of merchants in the restaurant industry.
-                    Additionally, you have the expertise to craft effective and professional emails tailored to your needs.No matter what the question ask, always give the google review also. If possible, Please always try to give answers in a single table format or point wise.
+                   No matter what the question ask, always give the google review also. If possible, Please always try to give answers in a single table format or point wise.
                     """
 
                     # Prepend company details to the user's query
