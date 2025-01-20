@@ -1,4 +1,4 @@
-Please Generate professional marketing emails for the following merchants and their emails to pitch them.u can use simple emojis also:
+Please Generate professional marketing emails for the following merchants and their emails to pitch them using below format.u can use simple emojis also:
 
 {merchant_data}
 
@@ -35,10 +35,10 @@ At Pulse iD, we specialize in creating targeted, cost-effective campaigns that b
 - No Upfront Costs: You only fund the discount or offer provided—no hidden fees, no surprises.  
 - Flexibility: You’re in control of your offers and can adjust or opt out anytime.  
 
-To give you an example, XYZ Coffee in Dubai partnered with us to offer a 15% discount through card-linked offers. Over three months, they experienced:  
+To give you an example, Zalora in singapore partnered with us to offer a 15% discount through card-linked offers. Over three months, they experienced:  
 - 30% growth in sales.  
 - 20% increase in repeat customers.  
-- Improved brand visibility through promotions on enterprise platforms. (Read more: [XYZ Coffee Case Study])  
+- Improved brand visibility through promotions on enterprise platforms. (Read more: [Zalora Case Study])  
 
 
 Visit our website to see success stories https://loyaltytruth.com/zions-cash-rewards-new-case-study/ 
