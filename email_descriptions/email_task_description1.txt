@@ -1,8 +1,8 @@
-Generate professional marketing emails for the following merchants and their emails to pitch them.u can use simple emojis.:
+Please Generate professional marketing emails for the following merchants and their emails to pitch them.u can use simple emojis also:
 
 {merchant_data}
 
-Use the below format. Please personalized the Subject attractively:
+Please Use the below format. Please personalized the Subject attractively:
 
 Subject: Boost Customer Traffic for 'merchant_name' – No Upfront Cost
 
