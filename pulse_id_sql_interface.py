@@ -137,6 +137,7 @@ if api_key:
 openai_api_key = get_openai_api_key()
 if openai_api_key:
     st.session_state.openai_api_key = openai_api_key
+    st.write(f"OpenAI API Key: {st.session_state.openai_api_key}")
 
 # Database Selection
 db_options = ["merchant_data_dubai.db", "merchant_data_singapore.db"]
