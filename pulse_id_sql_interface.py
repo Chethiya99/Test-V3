@@ -1,4 +1,4 @@
-# Import necessary libraries
+same error bro but i will help u with a tip.
 __import__('pysqlite3')
 import sys
 import os
@@ -14,11 +14,10 @@ import pandas as pd
 import streamlit as st
 from langchain_community.utilities import SQLDatabase
 from langchain_community.agent_toolkits import create_sql_agent
-from langchain_groq import ChatGroq  # Use Groq for SQL and extraction agents
+from langchain_openai import ChatOpenAI  # Replace ChatGroq with ChatOpenAI
 from langchain.agents import AgentType
 from langchain_community.llms import Ollama
 from crewai import Agent, Task, Crew, Process, LLM
-from langchain_openai import ChatOpenAI  # Use OpenAI for email generation agent
 
 # Page Configuration
 st.set_page_config(
@@ -41,10 +40,8 @@ if 'extraction_results' not in st.session_state:
     st.session_state.extraction_results = None
 if 'email_results' not in st.session_state:
     st.session_state.email_results = None
-if 'groq_api_key' not in st.session_state:
-    st.session_state.groq_api_key = ""  # Session state for Groq API key
-if 'openai_api_key' not in st.session_state:
-    st.session_state.openai_api_key = ""  # Session state for OpenAI API key
+if 'api_key' not in st.session_state:
+    st.session_state.api_key = ""
 if 'interaction_history' not in st.session_state:
     st.session_state.interaction_history = []  # Store all interactions (queries, results, emails)
 if 'selected_db' not in st.session_state:
@@ -121,27 +118,14 @@ st.markdown(
 # Sidebar Configuration
 st.sidebar.header("Settings")
 
-def get_groq_api_key():
-    """Function to get Groq API Key from user input"""
-    return st.sidebar.text_input("Enter Your Groq API Key:", type="password")
+def get_api_key():
+    """Function to get API Key from user input"""
+    return st.sidebar.text_input("Enter Your API Key:", type="password")
 
-def get_openai_api_key():
-    """Function to get OpenAI API Key from user input"""
-    return st.sidebar.text_input("Enter Your OpenAI API Key:", type="password")
-
-# Get Groq API Key
-groq_api_key = get_groq_api_key()
-if groq_api_key:
-    st.session_state.groq_api_key = groq_api_key
-
-# Get OpenAI API Key
-openai_api_key = get_openai_api_key()
-if openai_api_key:
-    st.session_state.openai_api_key = openai_api_key
-
-# Display the keys (optional, for debugging purposes)
-st.sidebar.write(f"Groq API Key: {'*' * len(st.session_state.groq_api_key)}")
-st.sidebar.write(f"OpenAI API Key: {'*' * len(st.session_state.openai_api_key)}")
+# Get API Key
+api_key = get_api_key()
+if api_key:
+    st.session_state.api_key = api_key
 
 # Database Selection
 db_options = ["merchant_data_dubai.db", "merchant_data_singapore.db"]
@@ -154,7 +138,7 @@ if new_selected_db != st.session_state.selected_db:
     st.sidebar.success(f"✅ Switched to database: {st.session_state.selected_db}")
 
 # Model Selection
-model_name = st.sidebar.selectbox("Select Model:", ["llama3-70b-8192", "llama-3.1-70b-versatile"])  # Groq models
+model_name = st.sidebar.selectbox("Select Model:", ["gpt-4", "gpt-3.5-turbo"])  # OpenAI models
 
 # Email Template Selection
 template_options = ["email_task_description1.txt", "email_task_description2.txt", "email_task_description3.txt"]
@@ -162,13 +146,13 @@ st.session_state.selected_template = st.sidebar.selectbox("Select Email Template
 st.sidebar.success(f"✅ Selected Template: {st.session_state.selected_template}")
 
 # Initialize SQL Database and Agent
-if st.session_state.selected_db and st.session_state.groq_api_key and not st.session_state.db_initialized:
+if st.session_state.selected_db and api_key and not st.session_state.db_initialized:
     try:
-        # Initialize Groq LLM
-        llm = ChatGroq(
+        # Initialize OpenAI LLM
+        llm = ChatOpenAI(
             temperature=0,
             model_name=model_name,
-            api_key=st.session_state.groq_api_key  # Use Groq API key
+            api_key=st.session_state.api_key
         )
 
         # Initialize SQLDatabase
@@ -226,12 +210,12 @@ def render_query_section():
                     st.session_state.raw_output = result['output'] if isinstance(result, dict) else result
                     
                     # Process raw output using an extraction agent 
-                    extractor_llm = LLM(model="groq/llama-3.1-70b-versatile", api_key=st.session_state.groq_api_key)  # Use Groq for extraction
+                    extractor_llm = LLM(model="gpt-4", api_key=st.session_state.api_key)  # Use OpenAI model
                     extractor_agent = Agent(
                         role="Data Extractor",
                         goal="Extract merchants, emails, google reviews from the raw output if they are only available.",
                         backstory="You are an expert in extracting structured information from text.",
-                        provider="Groq",
+                        provider="OpenAI",
                         llm=extractor_llm 
                     )
                     
@@ -282,18 +266,15 @@ if st.session_state.interaction_history:
                 if st.button(f"Generate Emails For Above Extracted Merchants", key=f"generate_emails_{idx}"):
                     with st.spinner("Generating emails..."):
                         try:
-                            # Define email generation agent using OpenAI
+                            # Define email generation agent 
+                            llm_email = LLM(model="gpt-4", api_key=st.session_state.api_key)  # Use OpenAI model
                             email_agent = Agent(
                                 role="Email Content Generator",
                                 goal="Generate personalized marketing emails for merchants.",
                                 backstory="You are a marketing expert named 'Jayan Nimna' of Pulse iD fintech company skilled in crafting professional and engaging emails for merchants.",
                                 verbose=True,
                                 allow_delegation=False,
-                                llm=ChatOpenAI(
-                                    model="gpt-4",
-                                    api_key=st.session_state.openai_api_key,  # Use OpenAI API key
-                                    temperature=0.7
-                                )
+                                llm=llm_email 
                             )
 
                             # Read the task description from the selected template file
@@ -385,4 +366,4 @@ st.markdown("---")
 st.markdown(
     "<div style='text-align: center; font-size: 14px;'>Powered by <strong>Pulse iD</strong> | Built with 🐍 Python and Streamlit</div>",
     unsafe_allow_html=True 
-)
+) 
