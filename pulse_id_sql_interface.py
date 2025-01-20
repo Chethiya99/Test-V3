@@ -139,25 +139,6 @@ if openai_api_key:
     st.session_state.openai_api_key = openai_api_key
     st.write(f"OpenAI API Key: {st.session_state.openai_api_key}")
 
-    # Initialize email_llm only if the API key is available
-    if 'email_llm' not in st.session_state:
-        try:
-            st.session_state.email_llm = ChatOpenAI(
-                model="gpt-4",
-                api_key=st.session_state.openai_api_key,
-                temperature=0.7
-            )
-            st.sidebar.success("✅ OpenAI model initialized successfully!")
-        except Exception as e:
-            st.error(f"Error initializing OpenAI model: {e}")
-            st.session_state.email_llm = None  # Reset email_llm if initialization fails
-else:
-    st.session_state.email_llm = None  # Reset email_llm if no key is provided
-    st.sidebar.warning("⚠️ Please enter a valid OpenAI API key to enable email generation.")
-        
-
-
-
 # Database Selection
 db_options = ["merchant_data_dubai.db", "merchant_data_singapore.db"]
 new_selected_db = st.sidebar.selectbox("Select Database:", db_options, index=db_options.index(st.session_state.selected_db))
@@ -304,7 +285,11 @@ if st.session_state.interaction_history:
                                 backstory="You are a marketing expert named 'Jayan Nimna' of Pulse iD fintech company skilled in crafting professional and engaging emails for merchants.",
                                 verbose=True,
                                 allow_delegation=False,
-                                llm=st.session_state.email_llm
+                                llm=ChatOpenAI(
+                                    model="gpt-4",
+                                    api_key=st.session_state.openai_api_key,
+                                    temperature=0.7
+                                )
                             )
 
                             # Read the task description from the selected template file
