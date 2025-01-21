@@ -1,4 +1,4 @@
-Please Generate professional marketing emails for the following merchants and their emails to pitch them using below format.u can use simple emojis also:
+Please Generate professional complete marketing emails for the following merchants and their emails to pitch them using below format. please use simple emojis also:
 
 {merchant_data}
 
