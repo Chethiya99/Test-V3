@@ -205,7 +205,7 @@ def render_query_section():
                 try:
                     # Define company details and agent role
                     company_details = """
-                   If possible, Please always try to give answers in a single table format or point wise.
+                   
                     """
 
                     # Prepend company details to the user's query
