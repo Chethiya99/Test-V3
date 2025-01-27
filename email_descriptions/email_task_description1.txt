@@ -1,59 +1,33 @@
-Please Generate professional marketing emails for the following merchants and their emails to pitch them using below format. please use simple emojis also:
+Please Generate professional marketing emails for the following merchants and their emails to pitch them. Please do not add any unwanted texts like 'Here is a personalized marketing email for each of the selected merchants:' as we sending the generated emails directly. Please seperate each email using a invisible short line:
 
 {merchant_data}
+Please follow the below guidance:
+First use a personalized subject for each email.
+The email should feature a warm and professional greeting, maintaining a conversational yet professional tone to captivate the reader. 
+Incorporate the following: 
+The Google rating of the merchant's category (e.g., burger shops) and its comparison to the average market rating.If the rating is below the market average: Present actionable ways PulseID can help the recipient improve their position, draw more foot traffic, and build stronger customer loyalty.
+If the rating is above the market average: Highlight how PulseID can reinforce their leadership position and expand their market share through increased foot traffic in a friendly way. 
+Ways Pulse iD can help to reach an audience otherwise very difficult to reach, through banks and telcos where customers trust the traffic source. Very different to posting a generic social media post with an offer. 
+But if the score rating is not available do not say this way or similarly “Whether your current rating leads or lags behind the market, there’s an opportunity to maximize impact.
+If there’s room to improve: PulseID can help strengthen your position with personalized loyalty programs and actionable insights designed to attract more customers and foster loyalty.
+If you’re already excelling: Let’s keep that momentum going by leveraging PulseID’s targeted campaigns to sustain your leadership position, reaching new audiences while ensuring your existing ones keep coming back”.
 
-Please Use the below format. Please personalized the Subject attractively:
+But mention the idea in a professional supporting and friendly manner how PulseID can support or you can give a generated example how they support merchants like these but not mentioning names.”Seamlessly integrate specific use cases relevant to the recipient's goals, using insights available online. 
 
-Subject: Boost Customer Traffic for 'merchant_name' – No Upfront Cost
+Based on the merchant and merchant's category/sub category, suggest or recommend a personalize offer for the merchant such as "Did you know the <merchant category> show similar to you that sells <food items(eg.burger, platter, steak etc. ) is giving away an offer for 20% with and is promoting to attract customers while serving the service? This can be you"
 
-Randomly select one of the following opening lines and make it more personalized and use it to start the email. Please use nice formatings:
+Provide a call-to-action that aligns with the recipient’s objectives, offering actionable steps on how PulseID can support their growth. Ensure the narrative flows naturally, avoiding generic phrases such as "data not available", "no score ratings can be found" etc. 
 
-1. Dear 'merchant_name',  'merchant_email',
-    
-   We’re thrilled to connect with 'merchant_name' and share how we can help you drive more customers, increase sales, and grow your business through our Pulse iD Marketplace.  
+Maintain a focus on positive outcomes and actionable insights even if full data is not present. Also give some summary of pulse ID use cases from its site and add a link. 
 
-2. Dear 'merchant_name', 'merchant_email' 
-  
-   At Pulse iD, we’re passionate about helping businesses like 'merchant_name' attract more customers and boost sales through our innovative card-linked offers platform.  
+This email should feel like it was written with directly targeting thethe recipient in mind, sparking curiosity and motivating engagement. 
 
-3. Dear 'merchant_name',  'merchant_email'
+It has avoid too generic statements such as and example "At Pulse iD, we specialize in creating targeted, cost-effective campaigns that bring high-value customers to your doorstep. Here’s how our program can benefit your business: - Increased Customer Footfall: Targeted campaigns bring high-value customers to your location. 📍 - No Upfront Costs: You only fund the discount or offer provided— no hidden fees, no surprises. 👍 - Flexibility: You’re in control of your offers and can adjust or opt out anytime. 🔁". 
+
+But you can use similar making it tailor made written for the email sender making more personalized and emotionally engage answering a problem and pain of a merchant
  
-   We’re excited to introduce 'merchant_name' to our Pulse iD Marketplace, a powerful tool designed to help businesses like yours increase foot traffic and drive revenue growth.  
-
-4. Dear 'merchant_name',  'merchant_email'
-  '  
-   It’s a pleasure to connect with 'merchant_name'! We’d love to show you how our Pulse iD Marketplace can help your business attract more customers and grow sales —all with no upfront costs.  
-
-5. Dear 'merchant_name',  'merchant_email'
-  
-   We’re reaching out to 'merchant_name' because we believe our Pulse iD Marketplace can help you drive more customers to your business and achieve your growth goals.  
-
-
-At Pulse iD, we specialize in creating targeted, cost-effective campaigns that bring high-value customers to your doorstep. Here’s how our program can benefit your business:  
-
-- Increased Customer Footfall: Targeted campaigns bring high-value customers to your location.  
-- No Upfront Costs: You only fund the discount or offer provided—no hidden fees, no surprises.  
-- Flexibility: You’re in control of your offers and can adjust or opt out anytime.  
-
-To give you an example, Zalora in singapore partnered with us to offer a 15% discount through card-linked offers. Over three months, they experienced:  
-- 30% growth in sales.  
-- 20% increase in repeat customers.  
-- Improved brand visibility through promotions on enterprise platforms. (Read more: [Zalora Case Study])  
-
-
-Visit our website to see success stories https://pulseid.com 
-
-Next Steps:
-
-Ready to get started? Complete our quick onboarding form here:  https://forms.gle/Y6dZ2MPPE5Q1K3LC8
-
-This will help us set up your account and customize a campaign tailored to your business goals.  
-
-If you have any questions or would like to explore offer options, feel free to reach out—I’d be happy to assist!  
- 
-
-Kind Regards, 
+Kind Regards,
 Jayan Nimna Chethiya  
-Marketing Manager 
+[Your Position]  
 Pulse iD  
 jayan@pulseid.com 
