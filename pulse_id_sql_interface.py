@@ -219,16 +219,16 @@ def render_query_section():
                     extractor_llm = LLM(model="gpt-4", api_key=st.session_state.api_key)  # Use OpenAI model
                     extractor_agent = Agent(
                         role="Data Extractor",
-                        goal="Extract merchants, emails, google reviews from the raw output if they are only available.",
+                        goal="Extract merchants, emails, reviews and anything posible from the raw output if they are only available.",
                         backstory="You are an expert in extracting structured information from text.",
                         provider="OpenAI",
                         llm=extractor_llm 
                     )
                     
                     extract_task = Task(
-                        description=f"Extract a list of 'merchants' and their 'emails', 'google reviews', etc from the following text:\n\n{st.session_state.raw_output}",
+                        description=f"Extract a list of 'merchants' and their 'emails', 'reviews', etc from the following text:\n\n{st.session_state.raw_output}",
                         agent=extractor_agent,
-                        expected_output="Please return A structured list of merchant names, their associated email addresses along with their google reviews extracted from the given text."
+                        expected_output="if available, Please return A structured list of merchant names, their associated email addresses, reviews etc extracted from the given text"
                     )
                     
                     # Crew execution for extraction 
