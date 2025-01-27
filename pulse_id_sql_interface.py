@@ -183,7 +183,7 @@ def render_query_section():
     
     # Predefined questions
     predefined_questions = [
-        "Give last merchant name and their email with google review",
+        "Give first three merchant names and their emails, ratings, cuisine type and reviews",
         "Give first merchant name and their email",
         "Give first 3 merchant names and their emails",
         "Give first two merchants names, their emails and their image urls"
