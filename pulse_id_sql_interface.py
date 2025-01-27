@@ -216,7 +216,7 @@ def render_query_section():
                     st.session_state.raw_output = result['output'] if isinstance(result, dict) else result
                     
                     # Process raw output using an extraction agent 
-                    extractor_llm = LLM(model="gpt-4", api_key=st.session_state.api_key)  # Use OpenAI model
+                    extractor_llm = LLM(model="gpt-4o", api_key=st.session_state.api_key)  # Use OpenAI model
                     extractor_agent = Agent(
                         role="Data Extractor",
                         goal="Extract merchants, emails, reviews and anything posible from the raw output if they are only available.",
@@ -273,7 +273,7 @@ if st.session_state.interaction_history:
                     with st.spinner("Generating emails..."):
                         try:
                             # Define email generation agent 
-                            llm_email = LLM(model="gpt-4", api_key=st.session_state.api_key)  # Use OpenAI model
+                            llm_email = LLM(model="gpt-4o", api_key=st.session_state.api_key)  # Use OpenAI model
                             email_agent = Agent(
                                 role="Assume yourself as a lead Marketing Lead, with years of experiences working for leading merchant sourcing and acquiring companies such as wirecard, cardlytics, fave that has helped to connect with small to medium merchants to source an offer. Generate a personalized email for merchants with a compelling and curiosity-piquing subject line that feels authentic and human-crafted, ensuring the recipient does not perceive it as spam or automated",
                                 goal="GGenerate personalized marketing emails for merchants.Each email should contains at least 300 words",
